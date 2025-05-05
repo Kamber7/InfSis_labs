@@ -1,0 +1,287 @@
+﻿using System.Windows.Forms;
+
+namespace InfSis_labs
+{
+    partial class Form1
+    {
+        private System.ComponentModel.IContainer components = null;
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        private void InitializeComponent()
+        {
+            btnInit = new Button();
+            txtHost = new TextBox();
+            txtPort = new TextBox();
+            txtDatabase = new TextBox();
+            txtUsername = new TextBox();
+            txtPassword = new TextBox();
+            btnOpen = new Button();
+            btnClose = new Button();
+            btnExecute = new Button();
+            lblStatus = new Label();
+            richTextBox = new RichTextBox();
+            btnView = new Button();
+            btnInsert = new Button();
+            btnDelete = new Button();
+            listBoxFunctions = new ListBox();
+            btnExecuteFunction = new Button();
+            dataGridView = new DataGridView();
+            SuspendLayout();
+
+            // 
+            // btnInit
+            // 
+            btnInit.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            btnInit.Location = new Point(50, 20);
+            btnInit.Name = "btnInit";
+            btnInit.Size = new Size(350, 60);
+            btnInit.TabIndex = 0;
+            btnInit.Text = "Инициализировать соединение";
+            btnInit.UseVisualStyleBackColor = true;
+            btnInit.Click += btnInit_Click;
+
+            // 
+            // txtHost
+            // 
+            txtHost.Font = new Font("Segoe UI", 12F);
+            txtHost.Location = new Point(50, 110);
+            txtHost.Name = "txtHost";
+            txtHost.Size = new Size(350, 29);
+            txtHost.TabIndex = 1;
+            txtHost.Text = "localhost";
+
+            // 
+            // txtPort
+            // 
+            txtPort.Font = new Font("Segoe UI", 12F);
+            txtPort.Location = new Point(50, 160);
+            txtPort.Name = "txtPort";
+            txtPort.Size = new Size(350, 29);
+            txtPort.TabIndex = 2;
+            txtPort.Text = "5432";
+
+            // 
+            // txtDatabase
+            // 
+            txtDatabase.Font = new Font("Segoe UI", 12F);
+            txtDatabase.Location = new Point(50, 210);
+            txtDatabase.Name = "txtDatabase";
+            txtDatabase.Size = new Size(350, 29);
+            txtDatabase.TabIndex = 3;
+            txtDatabase.Text = "Sharpes_labs";
+
+            // 
+            // txtUsername
+            // 
+            txtUsername.Font = new Font("Segoe UI", 12F);
+            txtUsername.Location = new Point(50, 260);
+            txtUsername.Name = "txtUsername";
+            txtUsername.Size = new Size(350, 29);
+            txtUsername.TabIndex = 4;
+            txtUsername.Text = "postgres";
+
+            // 
+            // txtPassword
+            // 
+            txtPassword.Font = new Font("Segoe UI", 12F);
+            txtPassword.Location = new Point(50, 310);
+            txtPassword.Name = "txtPassword";
+            txtPassword.PasswordChar = '*';
+            txtPassword.Size = new Size(350, 29);
+            txtPassword.TabIndex = 5;
+            txtPassword.Text = "12345";
+
+            // 
+            // btnOpen
+            // 
+            btnOpen.Font = new Font("Segoe UI", 12F);
+            btnOpen.Location = new Point(50, 360);
+            btnOpen.Name = "btnOpen";
+            btnOpen.Size = new Size(170, 60);
+            btnOpen.TabIndex = 6;
+            btnOpen.Text = "Открыть соединение";
+            btnOpen.UseVisualStyleBackColor = true;
+            btnOpen.Click += btnOpen_Click;
+
+            // 
+            // btnClose
+            // 
+            btnClose.Font = new Font("Segoe UI", 12F);
+            btnClose.Location = new Point(230, 360);
+            btnClose.Name = "btnClose";
+            btnClose.Size = new Size(170, 60);
+            btnClose.TabIndex = 7;
+            btnClose.Text = "Закрыть соединение";
+            btnClose.UseVisualStyleBackColor = true;
+            btnClose.Click += btnClose_Click;
+
+            // 
+            // btnExecute
+            // 
+            btnExecute.Font = new Font("Segoe UI", 12F);
+            btnExecute.Location = new Point(50, 440);
+            btnExecute.Name = "btnExecute";
+            btnExecute.Size = new Size(350, 60);
+            btnExecute.TabIndex = 8;
+            btnExecute.Text = "Выполнить";
+            btnExecute.UseVisualStyleBackColor = true;
+            btnExecute.Click += btnExecute_Click;
+
+            // 
+            // lblStatus
+            // 
+            lblStatus.AutoSize = true;
+            lblStatus.Font = new Font("Segoe UI", 12F);
+            lblStatus.Location = new Point(50, 510);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(0, 21);
+            lblStatus.TabIndex = 9;
+
+            // 
+            // richTextBox
+            // 
+            richTextBox.Font = new Font("Segoe UI", 12F);
+            richTextBox.Location = new Point(450, 50);
+            richTextBox.Name = "richTextBox";
+            richTextBox.Size = new Size(900, 600);
+            richTextBox.TabIndex = 10;
+            richTextBox.Text = "";
+
+            // 
+            // btnView
+            // 
+            btnView.Font = new Font("Segoe UI", 12F);
+            btnView.Location = new Point(450, 670);
+            btnView.Name = "btnView";
+            btnView.Size = new Size(200, 60);
+            btnView.TabIndex = 11;
+            btnView.Text = "Просмотр";
+            btnView.UseVisualStyleBackColor = true;
+            btnView.Click += btnView_Click;
+
+            // 
+            // btnInsert
+            // 
+            btnInsert.Font = new Font("Segoe UI", 12F);
+            btnInsert.Location = new Point(670, 670);
+            btnInsert.Name = "btnInsert";
+            btnInsert.Size = new Size(200, 60);
+            btnInsert.TabIndex = 12;
+            btnInsert.Text = "Вставить";
+            btnInsert.UseVisualStyleBackColor = true;
+            btnInsert.Click += btnInsert_Click;
+
+            // 
+            // btnDelete
+            // 
+            btnDelete.Font = new Font("Segoe UI", 12F);
+            btnDelete.Location = new Point(1100, 670);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(200, 60);
+            btnDelete.TabIndex = 13;
+            btnDelete.Text = "Удалить";
+            btnDelete.UseVisualStyleBackColor = true;
+            btnDelete.Click += btnDelete_Click;
+
+            // 
+            // listBoxFunctions
+            // 
+            listBoxFunctions.Font = new Font("Segoe UI", 12F);
+            listBoxFunctions.FormattingEnabled = true;
+            listBoxFunctions.ItemHeight = 21;
+            listBoxFunctions.Location = new Point(50, 540);
+            listBoxFunctions.Name = "listBoxFunctions";
+            listBoxFunctions.Size = new Size(350, 130);
+            listBoxFunctions.TabIndex = 15;
+            listBoxFunctions.Visible = false;
+
+            // 
+            // btnExecuteFunction
+            // 
+            btnExecuteFunction.Font = new Font("Segoe UI", 12F);
+            btnExecuteFunction.Location = new Point(50, 680);
+            btnExecuteFunction.Name = "btnExecuteFunction";
+            btnExecuteFunction.Size = new Size(350, 60);
+            btnExecuteFunction.TabIndex = 16;
+            btnExecuteFunction.Text = "Выполнить функцию";
+            btnExecuteFunction.UseVisualStyleBackColor = true;
+            btnExecuteFunction.Click += btnExecuteFunction_Click;
+            btnExecuteFunction.Visible = false;
+
+            // 
+            // dataGridView
+            // 
+            dataGridView.AllowUserToAddRows = false;
+            dataGridView.AllowUserToDeleteRows = false;
+            dataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView.Font = new Font("Segoe UI", 12F);
+            dataGridView.Location = new Point(450, 50);
+            dataGridView.Name = "dataGridView";
+            dataGridView.ReadOnly = true;
+            dataGridView.Size = new Size(900, 600);
+            dataGridView.TabIndex = 17;
+            dataGridView.Visible = false;
+
+            // 
+            // Form1
+            // 
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1400, 800);
+            Controls.Add(btnInit);
+            Controls.Add(txtHost);
+            Controls.Add(txtPort);
+            Controls.Add(txtDatabase);
+            Controls.Add(txtUsername);
+            Controls.Add(txtPassword);
+            Controls.Add(btnOpen);
+            Controls.Add(btnClose);
+            Controls.Add(btnExecute);
+            Controls.Add(lblStatus);
+            Controls.Add(richTextBox);
+            Controls.Add(btnView);
+            Controls.Add(btnInsert);
+            Controls.Add(btnDelete);
+            Controls.Add(listBoxFunctions);
+            Controls.Add(btnExecuteFunction);
+            Controls.Add(dataGridView);
+            MinimumSize = new Size(1200, 700);
+            Name = "Form1";
+            Text = "Управление базой данных PostgreSQL";
+            AutoScroll = true;
+            StartPosition = FormStartPosition.CenterScreen;
+            Load += Form1_Load;
+            ResumeLayout(false);
+            PerformLayout();
+        }
+
+        #endregion
+        private Button btnInit;
+        private TextBox txtHost;
+        private TextBox txtPort;
+        private TextBox txtDatabase;
+        private TextBox txtUsername;
+        private TextBox txtPassword;
+        private Button btnOpen;
+        private Button btnClose;
+        private Button btnExecute;
+        private Label lblStatus;
+        private RichTextBox richTextBox;
+        private Button btnView;
+        private Button btnInsert;
+        private Button btnDelete;
+        private ListBox listBoxFunctions;
+        private Button btnExecuteFunction;
+        private DataGridView dataGridView;
+    }
+}
