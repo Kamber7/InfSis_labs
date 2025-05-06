@@ -36,8 +36,8 @@ namespace InfSis_labs
             btnView.Visible = false;
             btnInsert.Visible = false;
             btnDelete.Visible = false;
-            btnFilter.Visible = false; 
-            btnLoadDataSet.Visible = false; 
+            btnFilter.Visible = false;
+            btnLoadDataSet.Visible = false;
 
             // Устанавливаем значения по умолчанию
             txtHost.Text = "localhost";
@@ -71,6 +71,16 @@ namespace InfSis_labs
             dataGridView.AllowUserToDeleteRows = false;
             dataGridView.ReadOnly = true;
             dataGridView.Visible = false;
+
+            dataGridView.CellEndEdit += DataGridView_CellEndEdit;
+        }
+
+        private void DataGridView_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (dataSet != null && dataSet.HasChanges())
+            {
+                btnUpdate.Enabled = true;
+            }
         }
 
         private void btnInit_Click(object sender, EventArgs e)
@@ -149,6 +159,7 @@ namespace InfSis_labs
                     btnFilter.Visible = false;
                     dataGridView.Visible = false;
                     richTextBox.Visible = false;
+                    btnUpdate.Visible = false;
 
                     // Очищаем DataSet
                     if (dataSet != null)
@@ -414,6 +425,7 @@ namespace InfSis_labs
             try
             {
                 // Создаем новую таблицу каждый раз
+                dataGridView.DataSource = null;
                 gamesDataTable = new DataTable();
 
                 using (var command = new NpgsqlCommand("SELECT * FROM get_all_games()", connection))
@@ -422,6 +434,10 @@ namespace InfSis_labs
                     gamesDataTable.Load(reader);
                 }
 
+                dataGridView.ReadOnly = true;
+                dataGridView.AllowUserToAddRows = false;
+                dataGridView.AllowUserToDeleteRows = false;
+
                 // Привязываем к DataGridView
                 dataGridView.DataSource = gamesDataTable;
                 dataGridView.Visible = true;
@@ -429,6 +445,8 @@ namespace InfSis_labs
 
                 // Настройка столбцов
                 ConfigureGridViewColumns(false);
+
+                btnUpdate.Visible = false;
 
                 lblStatus.Text = $"Загружено {gamesDataTable.Rows.Count} записей через функцию";
             }
@@ -442,6 +460,8 @@ namespace InfSis_labs
         {
             try
             {
+                dataGridView.DataSource = null;
+
                 dataSet = new DataSet();
                 changedDataTable = new DataTable();
 
@@ -449,32 +469,22 @@ namespace InfSis_labs
 
                 dataAdapter = new NpgsqlDataAdapter(query, connection);
 
-                // Configure the update command
-                dataAdapter.UpdateCommand = new NpgsqlCommand(
-                    "UPDATE games SET title = @title, genre = @genre, release_year = @release_year WHERE id = @id",
-                    connection);
-
-                dataAdapter.UpdateCommand.Parameters.Add("@title", NpgsqlTypes.NpgsqlDbType.Varchar, 100, "title");
-                dataAdapter.UpdateCommand.Parameters.Add("@genre", NpgsqlTypes.NpgsqlDbType.Varchar, 50, "genre");
-                dataAdapter.UpdateCommand.Parameters.Add("@release_year", NpgsqlTypes.NpgsqlDbType.Integer, 4, "release_year");
-                dataAdapter.UpdateCommand.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer, 4, "id");
-
-                // Enable conflict detection
-                dataAdapter.ContinueUpdateOnError = true;
+                // Конфигурация команд
+                ConfigureAdapterCommands();
 
                 dataAdapter.Fill(dataSet, "games");
+
+                // Убедимся, что используем правильный источник данных
                 dataGridView.DataSource = dataSet.Tables["games"];
                 dataGridView.Visible = true;
                 richTextBox.Visible = false;
 
-                // Enable editing in DataGridView
+                // Явно включаем редактирование
                 dataGridView.ReadOnly = false;
                 dataGridView.AllowUserToAddRows = false;
                 dataGridView.AllowUserToDeleteRows = false;
 
-                // Show the update button
                 btnUpdate.Visible = true;
-
                 ConfigureGridViewColumns(true);
 
                 lblStatus.Text = $"Загружено {dataSet.Tables["games"].Rows.Count} записей через DataSet";
@@ -484,6 +494,29 @@ namespace InfSis_labs
                 MessageBox.Show($"Ошибка при загрузке DataSet: {ex.Message}");
                 lblStatus.Text = "Ошибка загрузки DataSet";
             }
+        }
+
+        private void ConfigureAdapterCommands()
+        {
+            // Update command
+            dataAdapter.UpdateCommand = new NpgsqlCommand(
+                "UPDATE games SET title = @title, genre = @genre, release_year = @release_year WHERE id = @id",
+                connection);
+
+            dataAdapter.UpdateCommand.Parameters.Add("@title", NpgsqlTypes.NpgsqlDbType.Varchar, 100, "title");
+            dataAdapter.UpdateCommand.Parameters.Add("@genre", NpgsqlTypes.NpgsqlDbType.Varchar, 50, "genre");
+            dataAdapter.UpdateCommand.Parameters.Add("@release_year", NpgsqlTypes.NpgsqlDbType.Integer, 4, "release_year");
+            dataAdapter.UpdateCommand.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer, 4, "id");
+
+            // Insert command (если нужно добавлять строки)
+            dataAdapter.InsertCommand = new NpgsqlCommand(
+                "INSERT INTO games (title, genre, release_year) VALUES (@title, @genre, @release_year)",
+                connection);
+
+            // Delete command (если нужно удалять строки)
+            dataAdapter.DeleteCommand = new NpgsqlCommand(
+                "DELETE FROM games WHERE id = @id",
+                connection);
         }
 
         private void ConfigureGridViewColumns(bool isDataSet = false)
@@ -501,12 +534,9 @@ namespace InfSis_labs
                 dataGridView.Columns["genre"].Width = 120;
                 dataGridView.Columns["release_year"].Visible = false;
 
-                // Настройка специального поля только для DataSet
-                if (dataGridView.Columns["id_with_year"] != null)
+                foreach (DataGridViewColumn column in dataGridView.Columns)
                 {
-                    dataGridView.Columns["id_with_year"].Width = 150;
-                    dataGridView.Columns["id_with_year"].HeaderText = "ID и год выпуска";
-                    dataGridView.Columns["id_with_year"].DisplayIndex = 0;
+                    column.ReadOnly = false;
                 }
             }
             else
@@ -518,11 +548,71 @@ namespace InfSis_labs
                 dataGridView.Columns["release_year"].Width = 100;
                 dataGridView.Columns["release_year"].HeaderText = "Год выпуска";
 
-                // Скрываем поле id_with_year, если оно есть (только для DataSet)
-                if (dataGridView.Columns["id_with_year"] != null)
+                // Запрещаем редактирование для всех столбцов
+                foreach (DataGridViewColumn column in dataGridView.Columns)
                 {
-                    dataGridView.Columns["id_with_year"].Visible = false;
+                    column.ReadOnly = true;
                 }
+
+            }
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (dataSet == null || dataSet.Tables["games"] == null)
+                {
+                    MessageBox.Show("Сначала загрузите данные");
+                    return;
+                }
+
+                // Get changes
+                DataTable gamesTable = dataSet.Tables["games"];
+                DataTable changes = gamesTable.GetChanges();
+
+                if (changes == null || changes.Rows.Count == 0)
+                {
+                    MessageBox.Show("Нет изменений для сохранения");
+                    return;
+                }
+
+                // Show changes in richTextBox
+                richTextBox.Clear();
+                richTextBox.Visible = true;
+                richTextBox.AppendText("Измененные записи:\n\n");
+
+                foreach (DataRow row in changes.Rows)
+                {
+                    richTextBox.AppendText($"ID: {row["id"]}, ");
+                    richTextBox.AppendText($"Название: {row["title", DataRowVersion.Current]} (было: {row["title", DataRowVersion.Original]}), ");
+                    richTextBox.AppendText($"Жанр: {row["genre", DataRowVersion.Current]} (было: {row["genre", DataRowVersion.Original]}), ");
+                    richTextBox.AppendText($"Год: {row["release_year", DataRowVersion.Current]} (было: {row["release_year", DataRowVersion.Original]})\n");
+                }
+
+                // Ask for confirmation
+                DialogResult result = MessageBox.Show(
+                    $"Вы уверены, что хотите сохранить {changes.Rows.Count} изменений в базе данных?",
+                    "Подтверждение",
+                    MessageBoxButtons.YesNo);
+
+                if (result == DialogResult.Yes)
+                {
+                    // Update the database
+                    int rowsAffected = dataAdapter.Update(dataSet, "games");
+
+                    // Refresh the data
+                    dataSet.Clear();
+                    dataAdapter.Fill(dataSet, "games");
+
+                    MessageBox.Show($"Успешно обновлено {rowsAffected} записей");
+                    lblStatus.Text = $"Обновлено {rowsAffected} записей";
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при обновлении данных: {ex.Message}");
+                lblStatus.Text = "Ошибка обновления";
             }
         }
 
@@ -568,6 +658,11 @@ namespace InfSis_labs
         private void Form1_Load(object sender, EventArgs e)
         {
             // Инициализация формы
+        }
+
+        private void Form1_Load_1(object sender, EventArgs e)
+        {
+
         }
     }
 }
