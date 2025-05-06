@@ -10,6 +10,10 @@ namespace InfSis_labs
         private NpgsqlConnection connection;
         private NpgsqlCommand command;
         private DataTable gamesDataTable;
+        private DataSet dataSet;
+        private NpgsqlDataAdapter dataAdapter;
+        private DataTable changedDataTable;
+
 
         public Form1()
         {
@@ -32,6 +36,8 @@ namespace InfSis_labs
             btnView.Visible = false;
             btnInsert.Visible = false;
             btnDelete.Visible = false;
+            btnFilter.Visible = false; 
+            btnLoadDataSet.Visible = false; 
 
             // Устанавливаем значения по умолчанию
             txtHost.Text = "localhost";
@@ -42,10 +48,10 @@ namespace InfSis_labs
 
 
             gamesDataTable = new DataTable();
-            gamesDataTable.Columns.Add("ID", typeof(int));
-            gamesDataTable.Columns.Add("Название", typeof(string));
-            gamesDataTable.Columns.Add("Жанр", typeof(string));
-            gamesDataTable.Columns.Add("Год выпуска", typeof(int));
+            gamesDataTable.Columns.Add("id", typeof(int));
+            gamesDataTable.Columns.Add("title", typeof(string));
+            gamesDataTable.Columns.Add("ganre", typeof(string));
+            gamesDataTable.Columns.Add("release_year", typeof(int));
 
             // Настройка DataGridView
             dataGridView.DataSource = gamesDataTable;
@@ -58,6 +64,13 @@ namespace InfSis_labs
             listBoxFunctions.Items.Add("get_all_games - Получить все игры");
             listBoxFunctions.Visible = false;
             lblStatus.Text = "Соединение не инициализировано";
+
+            dataSet = new DataSet();
+            dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+            dataGridView.AllowUserToAddRows = false;
+            dataGridView.AllowUserToDeleteRows = false;
+            dataGridView.ReadOnly = true;
+            dataGridView.Visible = false;
         }
 
         private void btnInit_Click(object sender, EventArgs e)
@@ -93,13 +106,16 @@ namespace InfSis_labs
                     btnExecute.Visible = true;
 
                     // Показываем элементы для работы с данными
-                    richTextBox.Visible = true;
+                    richTextBox.Visible = false;
                     btnView.Visible = true;
                     btnInsert.Visible = true;
                     btnDelete.Visible = true;
                     listBoxFunctions.Visible = true;
                     btnExecuteFunction.Visible = true;
-                    dataGridView.Visible = true;
+                    btnLoadDataSet.Visible = true;
+                    btnFilter.Visible = true;
+                    dataGridView.Visible = false;
+                    dataGridView.Columns.Clear();
                 }
                 else
                 {
@@ -122,27 +138,28 @@ namespace InfSis_labs
                     connection.Close();
                     lblStatus.Text = "Соединение закрыто";
 
-                    // Скрываем кнопку выполнения команды
+                    // Скрываем элементы управления
                     btnExecute.Visible = false;
-
-                    // Скрываем элементы для работы с данными
-                    richTextBox.Visible = false;
                     btnView.Visible = false;
                     btnInsert.Visible = false;
                     btnDelete.Visible = false;
                     listBoxFunctions.Visible = false;
                     btnExecuteFunction.Visible = false;
+                    btnLoadDataSet.Visible = false;
+                    btnFilter.Visible = false;
                     dataGridView.Visible = false;
-                }
-                else
-                {
-                    lblStatus.Text = "Соединение уже закрыто";
+                    richTextBox.Visible = false;
+
+                    // Очищаем DataSet
+                    if (dataSet != null)
+                    {
+                        dataSet.Clear();
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка при закрытии соединения: {ex.Message}");
-                lblStatus.Text = "Ошибка при закрытии соединения";
             }
         }
 
@@ -217,7 +234,7 @@ namespace InfSis_labs
                     Label lblYear = new Label() { Text = "Год выпуска:", Left = 20, Top = 100, Width = 100 };
                     TextBox txtYear = new TextBox() { Left = 130, Top = 100, Width = 230 };
 
-                    Button btnOk = new Button() { Text = "Добавить", Left = 150, Top = 140, Width = 100, Height = 40};
+                    Button btnOk = new Button() { Text = "Добавить", Left = 150, Top = 140, Width = 100, Height = 40 };
                     btnOk.DialogResult = DialogResult.OK;
 
                     Button btnCancel = new Button() { Text = "Отмена", Left = 260, Top = 140, Width = 100, Height = 40 };
@@ -287,6 +304,9 @@ namespace InfSis_labs
             {
                 string selectedFunction = listBoxFunctions.SelectedItem.ToString().Split('-')[0].Trim();
 
+                // Очищаем текущие данные
+                dataGridView.DataSource = null;
+
                 switch (selectedFunction)
                 {
                     case "insert_game":
@@ -297,10 +317,12 @@ namespace InfSis_labs
                         break;
                     case "get_all_games":
                         GetAllGamesUsingFunction();
-                        btnExecute.Enabled = true;
-                        btnView.Enabled = true;
                         break;
                 }
+
+                // Всегда показываем DataGridView после выполнения функции
+                dataGridView.Visible = true;
+                richTextBox.Visible = false;
             }
             catch (Exception ex)
             {
@@ -391,37 +413,155 @@ namespace InfSis_labs
         {
             try
             {
-                gamesDataTable.Rows.Clear();
+                // Создаем новую таблицу каждый раз
+                gamesDataTable = new DataTable();
 
                 using (var command = new NpgsqlCommand("SELECT * FROM get_all_games()", connection))
                 using (var reader = command.ExecuteReader())
                 {
-                    // Проверяем, есть ли данные
-                    if (!reader.HasRows)
-                    {
-                        MessageBox.Show("В таблице нет данных");
-                        return;
-                    }
-
-                    while (reader.Read())
-                    {
-                        gamesDataTable.Rows.Add(
-                            reader["id"],
-                            reader["title"],
-                            reader["genre"],
-                            reader["release_year"]
-                        );
-                    }
+                    gamesDataTable.Load(reader);
                 }
 
-                // Обновляем отображение DataGridView
-                dataGridView.Refresh();
+                // Привязываем к DataGridView
+                dataGridView.DataSource = gamesDataTable;
                 dataGridView.Visible = true;
                 richTextBox.Visible = false;
+
+                // Настройка столбцов
+                ConfigureGridViewColumns(false);
+
+                lblStatus.Text = $"Загружено {gamesDataTable.Rows.Count} записей через функцию";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при получении данных: {ex.Message}\n\nПодробности:\n{ex.StackTrace}");
+                MessageBox.Show($"Ошибка при выполнении функции: {ex.Message}");
+            }
+        }
+
+        private void btnLoadDataSet_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                dataSet = new DataSet();
+                changedDataTable = new DataTable();
+
+                string query = "SELECT id, title, genre, release_year FROM games";
+
+                dataAdapter = new NpgsqlDataAdapter(query, connection);
+
+                // Configure the update command
+                dataAdapter.UpdateCommand = new NpgsqlCommand(
+                    "UPDATE games SET title = @title, genre = @genre, release_year = @release_year WHERE id = @id",
+                    connection);
+
+                dataAdapter.UpdateCommand.Parameters.Add("@title", NpgsqlTypes.NpgsqlDbType.Varchar, 100, "title");
+                dataAdapter.UpdateCommand.Parameters.Add("@genre", NpgsqlTypes.NpgsqlDbType.Varchar, 50, "genre");
+                dataAdapter.UpdateCommand.Parameters.Add("@release_year", NpgsqlTypes.NpgsqlDbType.Integer, 4, "release_year");
+                dataAdapter.UpdateCommand.Parameters.Add("@id", NpgsqlTypes.NpgsqlDbType.Integer, 4, "id");
+
+                // Enable conflict detection
+                dataAdapter.ContinueUpdateOnError = true;
+
+                dataAdapter.Fill(dataSet, "games");
+                dataGridView.DataSource = dataSet.Tables["games"];
+                dataGridView.Visible = true;
+                richTextBox.Visible = false;
+
+                // Enable editing in DataGridView
+                dataGridView.ReadOnly = false;
+                dataGridView.AllowUserToAddRows = false;
+                dataGridView.AllowUserToDeleteRows = false;
+
+                // Show the update button
+                btnUpdate.Visible = true;
+
+                ConfigureGridViewColumns(true);
+
+                lblStatus.Text = $"Загружено {dataSet.Tables["games"].Rows.Count} записей через DataSet";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке DataSet: {ex.Message}");
+                lblStatus.Text = "Ошибка загрузки DataSet";
+            }
+        }
+
+        private void ConfigureGridViewColumns(bool isDataSet = false)
+        {
+            if (dataGridView.Columns.Count == 0) return;
+
+            // Общие настройки
+            dataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+
+            if (isDataSet)
+            {
+                // Настройки для DataSet
+                dataGridView.Columns["id"].Visible = false;
+                dataGridView.Columns["title"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridView.Columns["genre"].Width = 120;
+                dataGridView.Columns["release_year"].Visible = false;
+
+                // Настройка специального поля только для DataSet
+                if (dataGridView.Columns["id_with_year"] != null)
+                {
+                    dataGridView.Columns["id_with_year"].Width = 150;
+                    dataGridView.Columns["id_with_year"].HeaderText = "ID и год выпуска";
+                    dataGridView.Columns["id_with_year"].DisplayIndex = 0;
+                }
+            }
+            else
+            {
+                // Настройки для вывода через функцию
+                dataGridView.Columns["id"].Width = 60;
+                dataGridView.Columns["title"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dataGridView.Columns["genre"].Width = 160;
+                dataGridView.Columns["release_year"].Width = 100;
+                dataGridView.Columns["release_year"].HeaderText = "Год выпуска";
+
+                // Скрываем поле id_with_year, если оно есть (только для DataSet)
+                if (dataGridView.Columns["id_with_year"] != null)
+                {
+                    dataGridView.Columns["id_with_year"].Visible = false;
+                }
+            }
+        }
+
+        private void btnFilter_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DataTable sourceTable = null;
+
+                // Определяем источник данных
+                if (dataGridView.DataSource is DataTable dt)
+                {
+                    sourceTable = dt;
+                }
+                else if (dataGridView.DataSource is DataView dv)
+                {
+                    sourceTable = dv.Table;
+                }
+
+                if (sourceTable == null)
+                {
+                    MessageBox.Show("Сначала загрузите данные");
+                    return;
+                }
+
+                // Создаем представление с фильтром
+                DataView filteredView = new DataView(sourceTable);
+                filteredView.RowFilter = "genre = 'RPG'";
+
+                // Привязываем к DataGridView
+                dataGridView.DataSource = filteredView;
+                dataGridView.Visible = true;
+                richTextBox.Visible = false;
+
+                lblStatus.Text = $"Найдено {filteredView.Count} RPG игр";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при фильтрации: {ex.Message}");
             }
         }
 
