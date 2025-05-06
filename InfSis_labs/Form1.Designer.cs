@@ -38,6 +38,7 @@ namespace InfSis_labs
             dataGridView = new DataGridView();
             btnLoadDataSet = new Button();
             btnFilter = new Button();
+            btnUpdate = new Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             SuspendLayout();
             // 
@@ -57,7 +58,7 @@ namespace InfSis_labs
             txtHost.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             txtHost.Location = new Point(50, 99);
             txtHost.Name = "txtHost";
-            txtHost.Size = new Size(350, 29);
+            txtHost.Size = new Size(350, 34);
             txtHost.TabIndex = 1;
             txtHost.Text = "localhost";
             // 
@@ -66,7 +67,7 @@ namespace InfSis_labs
             txtPort.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             txtPort.Location = new Point(50, 146);
             txtPort.Name = "txtPort";
-            txtPort.Size = new Size(350, 29);
+            txtPort.Size = new Size(350, 34);
             txtPort.TabIndex = 2;
             txtPort.Text = "5432";
             // 
@@ -75,7 +76,7 @@ namespace InfSis_labs
             txtDatabase.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             txtDatabase.Location = new Point(50, 193);
             txtDatabase.Name = "txtDatabase";
-            txtDatabase.Size = new Size(350, 29);
+            txtDatabase.Size = new Size(350, 34);
             txtDatabase.TabIndex = 3;
             txtDatabase.Text = "Sharpes_labs";
             // 
@@ -84,7 +85,7 @@ namespace InfSis_labs
             txtUsername.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             txtUsername.Location = new Point(50, 241);
             txtUsername.Name = "txtUsername";
-            txtUsername.Size = new Size(350, 29);
+            txtUsername.Size = new Size(350, 34);
             txtUsername.TabIndex = 4;
             txtUsername.Text = "postgres";
             // 
@@ -94,7 +95,7 @@ namespace InfSis_labs
             txtPassword.Location = new Point(50, 287);
             txtPassword.Name = "txtPassword";
             txtPassword.PasswordChar = '*';
-            txtPassword.Size = new Size(350, 29);
+            txtPassword.Size = new Size(350, 34);
             txtPassword.TabIndex = 5;
             txtPassword.Text = "12345";
             // 
@@ -154,7 +155,7 @@ namespace InfSis_labs
             btnView.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
             btnView.Location = new Point(450, 670);
             btnView.Name = "btnView";
-            btnView.Size = new Size(200, 60);
+            btnView.Size = new Size(150, 60);
             btnView.TabIndex = 11;
             btnView.Text = "Просмотр";
             btnView.UseVisualStyleBackColor = true;
@@ -163,9 +164,9 @@ namespace InfSis_labs
             // btnInsert
             // 
             btnInsert.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            btnInsert.Location = new Point(670, 670);
+            btnInsert.Location = new Point(610, 670);
             btnInsert.Name = "btnInsert";
-            btnInsert.Size = new Size(200, 60);
+            btnInsert.Size = new Size(150, 60);
             btnInsert.TabIndex = 12;
             btnInsert.Text = "Вставить";
             btnInsert.UseVisualStyleBackColor = true;
@@ -174,9 +175,9 @@ namespace InfSis_labs
             // btnDelete
             // 
             btnDelete.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            btnDelete.Location = new Point(1100, 670);
+            btnDelete.Location = new Point(1090, 670);
             btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(200, 60);
+            btnDelete.Size = new Size(150, 60);
             btnDelete.TabIndex = 13;
             btnDelete.Text = "Удалить";
             btnDelete.UseVisualStyleBackColor = true;
@@ -214,6 +215,7 @@ namespace InfSis_labs
             dataGridView.Location = new Point(450, 50);
             dataGridView.Name = "dataGridView";
             dataGridView.ReadOnly = true;
+            dataGridView.RowHeadersWidth = 51;
             dataGridView.Size = new Size(900, 600);
             dataGridView.TabIndex = 17;
             dataGridView.Visible = false;
@@ -221,9 +223,9 @@ namespace InfSis_labs
             // btnLoadDataSet
             // 
             btnLoadDataSet.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            btnLoadDataSet.Location = new Point(890, 670);
+            btnLoadDataSet.Location = new Point(770, 670);
             btnLoadDataSet.Name = "btnLoadDataSet";
-            btnLoadDataSet.Size = new Size(200, 60);
+            btnLoadDataSet.Size = new Size(150, 60);
             btnLoadDataSet.TabIndex = 18;
             btnLoadDataSet.Text = "Загрузить DataSet";
             btnLoadDataSet.UseVisualStyleBackColor = true;
@@ -239,20 +241,21 @@ namespace InfSis_labs
             btnFilter.Text = "Фильтр (RPG)";
             btnFilter.UseVisualStyleBackColor = true;
             btnFilter.Click += btnFilter_Click;
-
-
-            btnUpdate = new Button();
+            // 
+            // btnUpdate
+            // 
             btnUpdate.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            btnUpdate.Location = new Point(890, 670);
+            btnUpdate.Location = new Point(930, 670);
             btnUpdate.Name = "btnUpdate";
-            btnUpdate.Size = new Size(200, 60);
+            btnUpdate.Size = new Size(150, 60);
             btnUpdate.TabIndex = 20;
             btnUpdate.Text = "Обновить данные";
             btnUpdate.UseVisualStyleBackColor = true;
             btnUpdate.Visible = false;
             btnUpdate.Click += btnUpdate_Click;
-
-
+            // 
+            // Form1
+            // 
             // 
             // Form1
             // 
